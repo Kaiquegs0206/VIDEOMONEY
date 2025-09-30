@@ -6,7 +6,7 @@ from uuid import uuid4
 import streamlit as st
 from loguru import logger
 
-# Add the root directory of the project to the system path to allow importing modules from the project
+# Adiciona o diretório raiz do projeto ao caminho do sistema para permitir importar módulos do projeto
 root_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 if root_dir not in sys.path:
     sys.path.append(root_dir)
@@ -50,7 +50,7 @@ h1 {
 """
 st.markdown(streamlit_style, unsafe_allow_html=True)
 
-# 定义资源目录
+# Define diretórios de recursos
 font_dir = os.path.join(root_dir, "resource", "fonts")
 song_dir = os.path.join(root_dir, "resource", "songs")
 i18n_dir = os.path.join(root_dir, "webui", "i18n")
@@ -67,10 +67,10 @@ if "video_terms" not in st.session_state:
 if "ui_language" not in st.session_state:
     st.session_state["ui_language"] = config.ui.get("language", system_locale)
 
-# 加载语言文件
+# Carrega arquivos de idioma
 locales = utils.load_locales(i18n_dir)
 
-# 创建一个顶部栏，包含标题和语言选择
+# Cria uma barra superior contendo título e seleção de idioma
 title_col, lang_col = st.columns([3, 1])
 
 with title_col:
@@ -162,14 +162,14 @@ def init_log():
     _lvl = "DEBUG"
 
     def format_record(record):
-        # 获取日志记录中的文件全路径
+        # Obtém caminho completo do arquivo no registro de log
         file_path = record["file"].path
-        # 将绝对路径转换为相对于项目根目录的路径
+        # Converte caminho absoluto para caminho relativo ao diretório raiz do projeto
         relative_path = os.path.relpath(file_path, root_dir)
-        # 更新记录中的文件路径
+        # Atualiza caminho do arquivo no registro
         record["file"].path = f"./{relative_path}"
-        # 返回修改后的格式字符串
-        # 您可以根据需要调整这里的格式
+        # Retorna string de formato modificada
+        # Você pode ajustar o formato aqui conforme necessário
         record["message"] = record["message"].replace(root_dir, ".")
 
         _format = (
@@ -199,7 +199,7 @@ def tr(key):
     return loc.get("Translation", {}).get(key, key)
 
 
-# 创建基础设置折叠框
+# Cria caixa de configurações básicas
 if not config.app.get("hide_config", False):
     with st.expander(tr("Basic Settings"), expanded=False):
         config_panels = st.columns(3)
@@ -207,21 +207,21 @@ if not config.app.get("hide_config", False):
         middle_config_panel = config_panels[1]
         right_config_panel = config_panels[2]
 
-        # 左侧面板 - 日志设置
+        # Painel esquerdo - configurações de log
         with left_config_panel:
-            # 是否隐藏配置面板
+            # Se deve ocultar o painel de configuração
             hide_config = st.checkbox(
                 tr("Hide Basic Settings"), value=config.app.get("hide_config", False)
             )
             config.app["hide_config"] = hide_config
 
-            # 是否禁用日志显示
+            # Se deve desabilitar a exibição de logs
             hide_log = st.checkbox(
                 tr("Hide Log"), value=config.ui.get("hide_log", False)
             )
             config.ui["hide_log"] = hide_log
 
-        # 中间面板 - LLM 设置
+        # Painel central - configurações LLM
 
         with middle_config_panel:
             st.write(tr("LLM Settings"))
@@ -434,7 +434,7 @@ if not config.app.get("hide_config", False):
                 if st_llm_account_id:
                     config.app[f"{llm_provider}_account_id"] = st_llm_account_id
 
-        # 右侧面板 - API 密钥设置
+        # Painel direito - configurações de chaves da API
         with right_config_panel:
 
             def get_keys_from_config(cfg_key):
@@ -584,7 +584,7 @@ with middle_panel:
             video_concat_modes[selected_index][1]
         )
 
-        # 视频转场模式
+        # Modo de transição de vídeo
         video_transition_modes = [
             (tr("None"), VideoTransitionMode.none.value),
             (tr("Shuffle"), VideoTransitionMode.shuffle.value),
@@ -629,14 +629,14 @@ with middle_panel:
     with st.container(border=True):
         st.write(tr("Audio Settings"))
 
-        # 添加TTS服务器选择下拉框
+        # Adiciona caixa de seleção de servidor TTS
         tts_servers = [
             ("azure-tts-v1", "Azure TTS V1"),
             ("azure-tts-v2", "Azure TTS V2"),
             ("siliconflow", "SiliconFlow TTS"),
         ]
 
-        # 获取保存的TTS服务器，默认为v1
+        # Obtém servidor TTS salvo, padrão é v1
         saved_tts_server = config.ui.get("tts_server", "azure-tts-v1")
         saved_tts_server_index = 0
         for i, (server_value, _) in enumerate(tts_servers):
@@ -654,24 +654,24 @@ with middle_panel:
         selected_tts_server = tts_servers[selected_tts_server_index][0]
         config.ui["tts_server"] = selected_tts_server
 
-        # 根据选择的TTS服务器获取声音列表
+        # Obtém lista de vozes baseada no servidor TTS selecionado
         filtered_voices = []
 
         if selected_tts_server == "siliconflow":
-            # 获取硅基流动的声音列表
+            # Obtém lista de vozes do SiliconFlow
             filtered_voices = voice.get_siliconflow_voices()
         else:
-            # 获取Azure的声音列表
+            # Obtém lista de vozes do Azure
             all_voices = voice.get_all_azure_voices(filter_locals=None)
 
-            # 根据选择的TTS服务器筛选声音
+            # Filtra vozes baseado no servidor TTS selecionado
             for v in all_voices:
                 if selected_tts_server == "azure-tts-v2":
-                    # V2版本的声音名称中包含"v2"
+                    # Nomes de vozes da versão V2 contêm "v2"
                     if "V2" in v:
                         filtered_voices.append(v)
                 else:
-                    # V1版本的声音名称中不包含"v2"
+                    # Nomes de vozes da versão V1 não contêm "v2"
                     if "V2" not in v:
                         filtered_voices.append(v)
 
@@ -685,21 +685,21 @@ with middle_panel:
         saved_voice_name = config.ui.get("voice_name", "")
         saved_voice_name_index = 0
 
-        # 检查保存的声音是否在当前筛选的声音列表中
+        # Verifica se a voz salva está na lista de vozes filtradas atuais
         if saved_voice_name in friendly_names:
             saved_voice_name_index = list(friendly_names.keys()).index(saved_voice_name)
         else:
-            # 如果不在，则根据当前UI语言选择一个默认声音
+            # Se não estiver, seleciona uma voz padrão baseada no idioma da UI atual
             for i, v in enumerate(filtered_voices):
                 if v.lower().startswith(st.session_state["ui_language"].lower()):
                     saved_voice_name_index = i
                     break
 
-        # 如果没有找到匹配的声音，使用第一个声音
+        # Se não encontrar voz correspondente, usa a primeira voz
         if saved_voice_name_index >= len(friendly_names) and friendly_names:
             saved_voice_name_index = 0
 
-        # 确保有声音可选
+        # Garante que há vozes disponíveis
         if friendly_names:
             selected_friendly_name = st.selectbox(
                 tr("Speech Synthesis"),
@@ -715,7 +715,7 @@ with middle_panel:
             params.voice_name = voice_name
             config.ui["voice_name"] = voice_name
         else:
-            # 如果没有声音可选，显示提示信息
+            # Se não há vozes disponíveis, exibe mensagem de aviso
             st.warning(
                 tr(
                     "No voices available for the selected TTS server. Please select another server."
@@ -724,7 +724,7 @@ with middle_panel:
             params.voice_name = ""
             config.ui["voice_name"] = ""
 
-        # 只有在有声音可选时才显示试听按钮
+        # Só exibe botão de teste quando há vozes disponíveis
         if friendly_names and st.button(tr("Play Voice")):
             play_content = params.video_subject
             if not play_content:
@@ -757,7 +757,7 @@ with middle_panel:
                     if os.path.exists(audio_file):
                         os.remove(audio_file)
 
-        # 当选择V2版本或者声音是V2声音时，显示服务区域和API key输入框
+        # Quando seleciona versão V2 ou voz é V2, exibe região de serviço e campo de entrada da chave da API
         if selected_tts_server == "azure-tts-v2" or (
             voice_name and voice.is_azure_v2_voice(voice_name)
         ):
@@ -777,7 +777,7 @@ with middle_panel:
             config.azure["speech_region"] = azure_speech_region
             config.azure["speech_key"] = azure_speech_key
 
-        # 当选择硅基流动时，显示API key输入框和说明信息
+        # Quando seleciona SiliconFlow, exibe campo de entrada da chave da API e informações de explicação
         if selected_tts_server == "siliconflow" or (
             voice_name and voice.is_siliconflow_voice(voice_name)
         ):
@@ -790,7 +790,7 @@ with middle_panel:
                 key="siliconflow_api_key_input",
             )
 
-            # 显示硅基流动的说明信息
+            # Exibe informações de explicação do SiliconFlow
             st.info(
                 tr("SiliconFlow TTS Settings")
                 + ":\n"
