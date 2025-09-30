@@ -1,0 +1,64 @@
+[app]
+video_source = "pexels"
+hide_config = false
+
+# Pexels API Key - OBRIGATÓRIO para produção
+# Registre-se em https://www.pexels.com/api/ para obter sua chave API
+pexels_api_keys = []
+
+# Pixabay API Key - OPCIONAL
+# Registre-se em https://pixabay.com/api/docs/ para obter sua chave API
+pixabay_api_keys = []
+
+# Provedor LLM - Recomendado: "g4f" (gratuito) ou "openai" (pago)
+llm_provider = "g4f"
+
+# Configurações do G4F (gratuito)
+g4f_model_name = "gpt-4o-mini"
+
+# Configurações do OpenAI (se usar OpenAI)
+openai_api_key = ""
+openai_base_url = ""
+openai_model_name = "gpt-4o-mini"
+
+# Configurações do Gemini (se usar Google)
+gemini_api_key = ""
+gemini_model_name = "gemini-1.0-pro"
+
+# Configurações do Qwen (se usar Alibaba)
+qwen_api_key = ""
+qwen_model_name = "qwen-max"
+
+# Configurações do DeepSeek
+deepseek_api_key = ""
+deepseek_base_url = "https://api.deepseek.com"
+deepseek_model_name = "deepseek-chat"
+
+# Provedor de legendas
+subtitle_provider = "edge"
+
+# Configurações de produção
+max_concurrent_tasks = 3
+material_directory = ""
+
+# Redis (opcional para produção)
+enable_redis = false
+redis_host = "localhost"
+redis_port = 6379
+redis_db = 0
+redis_password = ""
+
+# Azure Speech (opcional)
+speech_key = ""
+speech_region = ""
+
+# SiliconFlow (opcional)
+api_key = ""
+
+[whisper]
+model_size = "large-v3"
+device = "CPU"
+compute_type = "int8"
+
+[ui]
+hide_log = false
